@@ -1,7 +1,7 @@
 import styles from './Navigation.module.css';
 import { useContext, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { AuthContext } from "../../../../neemjehenkffmee/src/context/AuthContext.jsx";
+import { AuthContext } from "../../context/AuthContext.jsx";
 import avatar from "../../assets/avatar.png";
 import Button from '../button/Button.jsx';
 import LogoutButton from "../button/LogoutButton.jsx";

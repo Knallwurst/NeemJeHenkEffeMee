@@ -1,8 +1,8 @@
 import styles from "./MapComponent.module.css";
 import {useState, useEffect, useContext} from 'react';
-import {userDatabase} from '../../../../neemjehenkffmee/src/fictional database/db.js'; // Import users from the fictional database
-import {geocodeAddress} from '../../../../neemjehenkffmee/src/helpers/geocoder.js'; // Helper function to geocode address
-import {AuthContext} from "../../../../neemjehenkffmee/src/context/AuthContext.jsx";
+import {userDatabase} from '../../fictional database/db.js'; // Import users from the fictional database
+import {geocodeAddress} from '../..//helpers/geocoder.js'; // Helper function to geocode address
+import {AuthContext} from "../../context/AuthContext.jsx";
 import Button from "../button/Button.jsx";
 import Input from "../input/Input.jsx";
 import {useForm} from "react-hook-form"; // Import the AuthContext
