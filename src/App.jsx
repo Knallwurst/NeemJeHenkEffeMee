@@ -1,11 +1,11 @@
 import './App.css'
 import {Route, Routes} from "react-router-dom";
-import Homepage from "../../neemjehenkffmee/src/pages/homepage/Homepage.jsx";
-import Register from "../../neemjehenkffmee/src/pages/register/Register.jsx";
-import Navigation from "../../neemjehenkffmee/src/components/navigation/Navigation.jsx";
-import Login from "../../neemjehenkffmee/src/pages/logIn/Login.jsx";
-import About from "../../neemjehenkffmee/src/pages/about/About.jsx";
-import AddUser from "../../neemjehenkffmee/src/pages/addUser/AddUser.jsx";
+import Homepage from "./pages/homepage/Homepage.jsx";
+import Register from "./pages/register/Register.jsx";
+import Navigation from "./components/navigation/Navigation.jsx";
+import Login from "./pages/logIn/Login.jsx";
+import About from "./pages/about/About.jsx";
+import AddUser from "./pages/addUser/AddUser.jsx";
 
 function App() {
 
