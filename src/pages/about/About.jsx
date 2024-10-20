@@ -1,6 +1,5 @@
 import styles from "./About.module.css";
 import painful from "../../assets/Painful Harold PNG.png";
-import broll from "../../assets/B Roll Front End GREY.mp4";
 
 function About() {
     return (
