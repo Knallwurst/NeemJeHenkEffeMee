@@ -1,0 +1,1 @@
+De instructies om het programma te laten draaien staan verwerkt in de PDF van de eindopdracht in hoofdstuk 8 van de installatiehandleiding.
