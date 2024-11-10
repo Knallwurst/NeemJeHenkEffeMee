@@ -233,7 +233,7 @@ function MapComponent() {
                     placeholder="Search Henk by address..." required
                 />
 
-                <Button type="submit">Search</Button>
+                <Button type="submit">Henk!</Button>
             </form>
 
             <div id="map" className={styles["map-container"]}></div>
