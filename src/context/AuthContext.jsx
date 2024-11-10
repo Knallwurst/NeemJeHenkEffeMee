@@ -1,16 +1,18 @@
-import {createContext, useEffect, useState} from "react";
+import { createContext, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {jwtDecode} from "jwt-decode";
-import {useNavigate} from "react-router-dom";
 import axios from "axios";
 import isTokenValid from "../helpers/tokenValidation.js";
+import avatar from "../assets/avatar.png"; // Default avatar
 
 export const AuthContext = createContext({});
 
-function AuthContextProvider({children}) {
-    const [isAuth, setIsAuth] = useState({isAuth: false, user: {}, status: "pending"});
+function AuthContextProvider({ children }) {
+    const [isAuth, setIsAuth] = useState({ isAuth: false, user: {}, status: "pending" });
+    const [profilePicture, setProfilePicture] = useState(avatar); // Profile picture state
     const navigate = useNavigate();
 
-    useEffect( () => {
+    useEffect(() => {
         const token = localStorage.getItem("token");
 
         if (token) {
@@ -49,6 +51,7 @@ function AuthContextProvider({children}) {
             user: null,
             status: "done"
         });
+        setProfilePicture(avatar); // Reset profile picture to default
         console.log("Gebruiker is uitgelogd!");
         navigate("/");
         window.location.reload(); // Refresh the page after navigating
@@ -62,6 +65,18 @@ function AuthContextProvider({children}) {
                     Authorization: `Bearer ${token}`,
                 }
             });
+
+            // Fetch the user's profile picture
+            const profilePicResponse = await axios.get(`https://api.datavortex.nl/neemjehenkffmee/users/${username}/download`, {
+                headers: {
+                    "X-Api-Key": import.meta.env.VITE_NOVI_BACKEND_API_KEY,
+                    Authorization: `Bearer ${token}`,
+                },
+                responseType: "blob",
+            });
+            const imageBlob = profilePicResponse.data;
+            const imageUrl = URL.createObjectURL(imageBlob);
+
             setIsAuth({
                 ...isAuth,
                 isAuth: true,
@@ -71,29 +86,31 @@ function AuthContextProvider({children}) {
                 },
                 status: "done"
             });
+            setProfilePicture(imageUrl); // Set profile picture
             navigate("/");
-    } catch (error) {
-        setIsAuth({
-            isAuth: false,
-            user: null,
-            status: "done"
-        });
-        console.error(error);
+        } catch (error) {
+            setIsAuth({
+                isAuth: false,
+                user: null,
+                status: "done"
+            });
+            console.error("Error fetching user details or profile picture:", error);
+        }
     }
-}
 
-const contextData = {
-    isAuth: isAuth.isAuth,
-    user: isAuth.user,
-    "login": login,
-    "logOut": logOut,
-};
+    const contextData = {
+        isAuth: isAuth.isAuth,
+        user: isAuth.user,
+        profilePicture, // Expose profile picture to context
+        login,
+        logOut,
+    };
 
-return (
-    <AuthContext.Provider value={contextData}>
-        { isAuth.status === "done" ? children : <p>Loading...</p> }
-    </AuthContext.Provider>
-);
+    return (
+        <AuthContext.Provider value={contextData}>
+            {isAuth.status === "done" ? children : <p>Loading...</p>}
+        </AuthContext.Provider>
+    );
 }
 
 export default AuthContextProvider;

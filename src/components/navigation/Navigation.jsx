@@ -1,19 +1,24 @@
-import styles from './Navigation.module.css';
 import { useContext, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { AuthContext } from "../../context/AuthContext.jsx";
-import avatar from "../../assets/avatar.png";
-import Button from '../button/Button.jsx';
+import { NavLink, useNavigate } from 'react-router-dom';
+import styles from './Navigation.module.css';
+import { AuthContext } from "../../context/AuthContext";
+import avatar from "../../assets/avatar.png"; // Default avatar
+import Button from '../Button/Button';
 import LogoutButton from "../button/LogoutButton.jsx";
 
 function Navigation() {
-    const { isAuth, user, logOut } = useContext(AuthContext);
+    const { isAuth, user, profilePicture, logOut } = useContext(AuthContext);
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const navigate = useNavigate();
 
     // Function to toggle the dropdown visibility
     const toggleDropdown = () => {
         setDropdownOpen(!dropdownOpen);
+    };
+
+    // Function to close the dropdown
+    const closeDropdown = () => {
+        setDropdownOpen(false);
     };
 
     return (
@@ -35,16 +40,25 @@ function Navigation() {
                         </Button>
                         <div className={styles["user-dropdown-container"]}>
                             <img
-                                src={avatar}
+                                src={profilePicture || avatar} // Use context profile picture or default avatar
                                 alt="User Avatar"
                                 className={styles["avatar"]}
                                 onClick={toggleDropdown}
                             />
                             {dropdownOpen && (
                                 <div className={styles["dropdown-menu"]}>
-                                    <div className={styles["user"]}>
+                                    <div className={styles["user-info"]}>
                                         <h5 className={styles["username"]}>{user.username}</h5>
-                                        <LogoutButton onClick={logOut} className={styles["nav-button-logout"]}>
+                                        <NavLink
+                                            to="/profile"
+                                            className={({ isActive }) =>
+                                                isActive ? styles["active-navlink"] : styles["navlink"]
+                                            }
+                                            onClick={closeDropdown} // Close dropdown on profile click
+                                        >
+                                            Profile
+                                        </NavLink>
+                                        <LogoutButton onClick={() => { logOut(); closeDropdown(); }} className={styles["nav-button-logout"]}>
                                             Uitloggen
                                         </LogoutButton>
                                     </div>
