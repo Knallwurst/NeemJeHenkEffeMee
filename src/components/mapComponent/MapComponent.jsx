@@ -6,6 +6,7 @@ import {AuthContext} from "../../context/AuthContext.jsx";
 import Button from "../button/Button.jsx";
 import Input from "../input/Input.jsx";
 import {useForm} from "react-hook-form"; // Import the AuthContext
+import FilterSidebar from '../filter/FilterSidebar.jsx';
 
 function MapComponent() {
     const {isAuth} = useContext(AuthContext); // Access isAuth from AuthContext
@@ -17,6 +18,7 @@ function MapComponent() {
 
     // Preset fallback location (Neemjehenkffmee Office)
     const fallbackLocation = {lat: 51.232442, lng: 4.939239};
+    const [filters, setFilters] = useState({});
 
     useEffect(() => {
         // Load the Google Maps script asynchronously
@@ -151,6 +153,13 @@ function MapComponent() {
         setMarkers([]); // Reset the markers state
     };
 
+    const handleApplyFilters = (newFilters) => {
+        setFilters(newFilters);
+        console.log('Toegepaste filters:', newFilters);
+
+        // Hier kun je eventueel logica toevoegen om de kaart opnieuw te laden op basis van de filters
+    };
+
     // Function to handle search for closest users
     const handleSearch = async (event) => {
         event.preventDefault();
@@ -222,6 +231,9 @@ function MapComponent() {
 
     return (
         <div className={styles["address-container"]}>
+            {/* Sidebar voor filters */}
+            <FilterSidebar onApplyFilters={handleApplyFilters} />
+
             {/* Search Closest Users Form */}
             <form className={styles["search-form"]} onSubmit={handleSearch}>
                 <Input

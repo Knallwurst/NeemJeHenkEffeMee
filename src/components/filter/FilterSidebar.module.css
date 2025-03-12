@@ -1,0 +1,51 @@
+.filter-sidebar {
+    position: fixed;
+    top: 20%;
+    left: 0;
+    width: 300px;
+    height: 60%;
+    background-color: rgba(255, 255, 255, 0.8);
+    box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    border-radius: 0 10px 10px 0;
+    z-index: 1000;
+    transition: transform 0.3s ease;
+}
+
+.filter-sidebar input {
+    padding: 8px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.filter-sidebar button {
+    padding: 10px;
+    font-size: 16px;
+    color: #fff;
+    background-color: #007bff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.filter-sidebar button:hover {
+    background-color: #0056b3;
+}
+
+.filter-sidebar label {
+    display: flex;
+    flex-direction: column; /* Zorgt dat de tekst boven de input staat */
+    font-size: 14px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.filter-sidebar input {
+    margin-top: 5px; /* Geeft ruimte tussen label en input */
+}
