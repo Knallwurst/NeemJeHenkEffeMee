@@ -1,10 +1,39 @@
 import styles from './FilterSidebar.module.css';
-
-import React, { useState } from 'react';
+// eslint-disable-next-line no-unused-vars
+import React, { useState, useEffect } from 'react';
 
 const FilterSidebar = ({ onApplyFilters }) => {
     const [location, setLocation] = useState('');
-    const [radius, setRadius] = useState(10);  // Default radius in km
+    const [radius, setRadius] = useState(50); // Standaardwaarde op 50 km
+    const [, setAutocomplete] = useState(null);
+
+    useEffect(() => {
+        if (window.google && window.google.maps && window.google.maps.places) {
+            const autocompleteInstance = new window.google.maps.places.Autocomplete(
+                document.getElementById("location-input"),
+                { types: ["geocode"] }
+            );
+
+            autocompleteInstance.addListener("place_changed", () => {
+                const place = autocompleteInstance.getPlace();
+                if (place.geometry) {
+                    setLocation(place.formatted_address);
+                    onApplyFilters({
+                        location: place.formatted_address,
+                        radius,
+                        coordinates: {
+                            lat: place.geometry.location.lat(),
+                            lng: place.geometry.location.lng()
+                        }
+                    });
+                }
+            });
+
+            setAutocomplete(autocompleteInstance);
+        } else {
+            console.error("Google Maps API is niet geladen");
+        }
+    }, [onApplyFilters, radius]);
 
     const handleApplyFilters = () => {
         onApplyFilters({ location, radius });
@@ -17,21 +46,25 @@ const FilterSidebar = ({ onApplyFilters }) => {
                 Locatie
                 <input
                     type="text"
+                    id="location-input"
                     value={location}
                     onChange={(e) => setLocation(e.target.value)}
-                    placeholder="Voer een locatie in"
+                    placeholder="Typ een stad of dorp..."
+                    autoComplete="on"
                 />
             </label>
             <label>
-                Straal (km)
+                Straal: <strong>{radius} km</strong> {}
                 <input
-                    type="number"
+                    type="range"
+                    min="5"
+                    max="250"
+                    step="5"
                     value={radius}
-                    onChange={(e) => setRadius(e.target.value)}
-                    min="1"
+                    onChange={(e) => setRadius(Number(e.target.value))}
                 />
             </label>
-            <button onClick={handleApplyFilters}>Filters toepassen</button>
+            <button onClick={handleApplyFilters}>Zoek garages</button>
         </div>
     );
 };

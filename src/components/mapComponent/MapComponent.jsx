@@ -1,3 +1,5 @@
+/* global google */
+
 import styles from "./MapComponent.module.css";
 import {useState, useEffect, useContext} from 'react';
 import {userDatabase} from '../../fictional database/db.js'; // Import users from the fictional database
@@ -7,6 +9,9 @@ import Button from "../button/Button.jsx";
 import Input from "../input/Input.jsx";
 import {useForm} from "react-hook-form"; // Import the AuthContext
 import FilterSidebar from '../filter/FilterSidebar.jsx';
+
+console.log("Google API Key:", import.meta.env.VITE_MAP_COMPONENT_API_KEY);
+console.log("Google Maps API beschikbaar:", typeof google !== "undefined" ? google : "Niet geladen");
 
 function MapComponent() {
     const {isAuth} = useContext(AuthContext); // Access isAuth from AuthContext
@@ -19,6 +24,7 @@ function MapComponent() {
     // Preset fallback location (Neemjehenkffmee Office)
     const fallbackLocation = {lat: 51.232442, lng: 4.939239};
     const [filters, setFilters] = useState({});
+    console.log("Huidige filters:", filters);
 
     useEffect(() => {
         // Load the Google Maps script asynchronously
@@ -26,8 +32,7 @@ function MapComponent() {
             if (!document.querySelector('script[src*="maps.googleapis.com"]')) {
                 try {
                     // Load the Google Maps API with the map ID and marker library
-                    await loadScript(`https://maps.googleapis.com/maps/api/js?key=${import.meta.env.VITE_MAP_COMPONENT_API_KEY}&map_ids=${import.meta.env.VITE_MAP_ID_KEY}&libraries=marker`);
-                    await getUserLocation(); // Once script is loaded, initialize the map
+                    await loadScript(`https://maps.googleapis.com/maps/api/js?key=${import.meta.env.VITE_MAP_COMPONENT_API_KEY}&libraries=places,marker`);                    await getUserLocation(); // Once script is loaded, initialize the map
                 } catch (error) {
                     console.error("Error loading Google Maps script:", error);
                     alert("Failed to load Google Maps. Please try again later.");
@@ -157,7 +162,54 @@ function MapComponent() {
         setFilters(newFilters);
         console.log('Toegepaste filters:', newFilters);
 
-        // Hier kun je eventueel logica toevoegen om de kaart opnieuw te laden op basis van de filters
+        if (newFilters.coordinates && map) {
+            map.setCenter(newFilters.coordinates);
+            map.setZoom(14);
+
+            // Zoek garages in de buurt met Google Places API
+            findNearbyGarages(newFilters.coordinates, newFilters.radius);
+        }
+    };
+
+    const findNearbyGarages = (location, radius) => {
+        const service = new window.google.maps.places.PlacesService(map);
+
+        const request = {
+            location,
+            radius: radius * 1000, // Omzetten naar meters
+            type: ['car_repair'], // Zoeken naar garages / autoreparatiebedrijven
+        };
+
+        service.nearbySearch(request, (results, status) => {
+            if (status === window.google.maps.places.PlacesServiceStatus.OK) {
+                console.log("Gevonden garages:", results);
+
+                clearMarkers(); // Verwijder oude markers
+
+                const newMarkers = results.map(place => {
+                    const marker = new window.google.maps.Marker({
+                        map: map,
+                        position: place.geometry.location,
+                        title: place.name,
+                    });
+
+                    // Info-venster voor garage
+                    const infoWindow = new window.google.maps.InfoWindow({
+                        content: `<strong>${place.name}</strong><br>${place.vicinity}`
+                    });
+
+                    marker.addListener("click", () => {
+                        infoWindow.open(map, marker);
+                    });
+
+                    return marker;
+                });
+
+                setMarkers(newMarkers);
+            } else {
+                console.error("Geen garages gevonden:", status);
+            }
+        });
     };
 
     // Function to handle search for closest users

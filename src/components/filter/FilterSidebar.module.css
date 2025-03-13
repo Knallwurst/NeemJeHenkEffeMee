@@ -3,7 +3,7 @@
     top: 20%;
     left: 0;
     width: 300px;
-    height: 60%;
+    height: 32%;
     background-color: rgba(255, 255, 255, 0.8);
     box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
     padding: 20px;
@@ -34,7 +34,7 @@
 }
 
 .filter-sidebar button:hover {
-    background-color: #0056b3;
+    background-color: #c32321;
 }
 
 .filter-sidebar label {
@@ -48,4 +48,41 @@
 
 .filter-sidebar input {
     margin-top: 5px; /* Geeft ruimte tussen label en input */
+}
+
+.filter-sidebar input[type="range"] {
+    width: 100%;
+    margin-top: 5px;
+    -webkit-appearance: none;
+    appearance: none;
+    height: 5px;
+    background: #0c77f4;
+    border-radius: 5px;
+    outline: none;
+    opacity: 0.9;
+    transition: opacity 0.2s;
+}
+
+.filter-sidebar input[type="range"]:hover {
+    opacity: 1;
+}
+
+.filter-sidebar input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 15px;
+    height: 15px;
+    background: #fff;
+    border: 2px solid #f4f4f5;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.filter-sidebar input[type="range"]::-moz-range-thumb {
+    width: 15px;
+    height: 15px;
+    background: #fff;
+    border: 2px solid #007bff;
+    border-radius: 50%;
+    cursor: pointer;
 }
