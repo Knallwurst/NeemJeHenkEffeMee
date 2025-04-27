@@ -1,0 +1,10 @@
+.page-container {
+  width: 100vw;
+  min-height: 100vh;
+  color: black;
+  background-color: #E0EFFF;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+}

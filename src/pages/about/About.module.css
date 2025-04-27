@@ -1,0 +1,20 @@
+.about-text {
+    padding: 0 500px;
+    margin-top: 50px;
+    margin-bottom: 50px;
+}
+
+.painful-wrapper {
+    border: 1px darkgrey;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 60px;
+
+}
+
+.painful {
+    max-width: 50%; /* Let the image scale down but not exceed its natural size */
+    height: auto;
+
+}

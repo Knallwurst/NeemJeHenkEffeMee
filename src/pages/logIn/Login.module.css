@@ -1,0 +1,14 @@
+.login-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 200vh;
+}
+
+form {
+  margin-top: 200px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px; /* zorgt voor ruimte tussen input, button en link */
+}
