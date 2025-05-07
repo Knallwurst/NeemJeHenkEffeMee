@@ -1,6 +1,6 @@
 if (!import.meta.env.VITE_MAP_COMPONENT_API_KEY) {
   console.error(
-    "❌ Geen Google Maps API key gevonden. Controleer je .env bestand!"
+    "Geen Google Maps API key gevonden. Controleer je .env bestand!"
   );
 }
 import {
