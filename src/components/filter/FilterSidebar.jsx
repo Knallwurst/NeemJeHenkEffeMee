@@ -33,7 +33,7 @@ const FilterSidebar = ({ onApplyFilters }) => {
           },
         });
       } else {
-        console.error("❌ Geocode mislukt:", status, results);
+        console.error("Geocode mislukt:", status, results);
         alert("Kon de locatie niet vinden. Probeer een andere plaatsnaam.");
       }
     });
@@ -47,7 +47,7 @@ const FilterSidebar = ({ onApplyFilters }) => {
 
   return (
     <div className={styles["filter-sidebar"]}>
-      <h3>Filter Garages</h3>
+      <h3>Lokale experts</h3>
       <label>
         Locatie
         <input
