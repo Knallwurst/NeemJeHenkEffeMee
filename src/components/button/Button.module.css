@@ -1,0 +1,40 @@
+/* General button styles */
+.nav-button {
+    background-color: black;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: color 0.3s ease;
+    margin: 0 12px;
+    border-radius: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1;
+}
+
+/* Green fill effect */
+.nav-button::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 0;
+    height: 100%;
+    background-color: rgba(2, 175, 245, 0.5);
+    transition: width 0.3s ease-in-out;
+    z-index: -1; /* Ensure background stays behind text */
+}
+
+/* Hover state for general buttons */
+.nav-button:hover::after {
+    width: 100%;
+}
+
+.nav-button:hover {
+    z-index: 1;
+}
