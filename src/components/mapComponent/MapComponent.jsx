@@ -1,246 +1,281 @@
-/* global google */
-
+if (!import.meta.env.VITE_MAP_COMPONENT_API_KEY) {
+  console.error(
+    "❌ Geen Google Maps API key gevonden. Controleer je .env bestand!"
+  );
+}
+import {
+  APIProvider,
+  Map,
+  Marker,
+  InfoWindow,
+  useMap,
+  AdvancedMarker,
+} from "@vis.gl/react-google-maps";
 import styles from "./MapComponent.module.css";
-import { Loader } from "@googlemaps/js-api-loader";
-import {useState, useEffect, useContext} from 'react';
-import {userDatabase} from '../../fictional database/db.js'; // Import users from the fictional database
-import {geocodeAddress} from '../..//helpers/geocoder.js'; // Helper function to geocode address
-import {AuthContext} from "../../context/AuthContext.jsx";
-import Button from "../button/Button.jsx";
-import Input from "../input/Input.jsx";
-import FilterSidebar from '../filter/FilterSidebar.jsx';
+import { useState, useEffect } from "react";
+import { userDatabase } from "../../fictional database/db";
+import { useNavigate } from "react-router-dom";
 
-console.log("Google API Key:", import.meta.env.VITE_MAP_COMPONENT_API_KEY);
-console.log("Google Maps API beschikbaar:", typeof google !== "undefined" ? google : "Niet geladen");
+// Separate component to handle map movement
+function MapController({ coordinates }) {
+  const map = useMap();
 
-function MapComponent() {
-    const {isAuth} = useContext(AuthContext); // Access isAuth from AuthContext
-    const [map, setMap] = useState(null);
-    const [markers, setMarkers] = useState([]);
-    const [infoWindow, setInfoWindow] = useState(null); // Store a single info window instance
+  useEffect(() => {
+    if (map && coordinates) {
+      map.panTo(coordinates);
+      map.setZoom(10);
+    }
+  }, [map, coordinates]);
 
+  return null;
+}
 
-    // Preset fallback location (Neemjehenkffmee Office)
-    const fallbackLocation = {lat: 51.232442, lng: 4.939239};
-    const [filters, setFilters] = useState({});
-    console.log("Huidige filters:", filters);
+// Color mapping function
+const getInitialColor = (initial) => {
+  const colors = {
+    A: "#FF6B6B", // Coral Red
+    B: "#4ECDC4", // Turquoise
+    C: "#45B7D1", // Sky Blue
+    D: "#96CEB4", // Sage Green
+    E: "#FFEEAD", // Cream Yellow
+    F: "#D4A5A5", // Dusty Rose
+    G: "#9B59B6", // Purple
+    H: "#3498DB", // Blue
+    I: "#E67E22", // Orange
+    J: "#2ECC71", // Emerald
+    K: "#E74C3C", // Red
+    L: "#F1C40F", // Yellow
+    M: "#1ABC9C", // Teal
+    N: "#34495E", // Dark Blue
+    O: "#E84393", // Pink
+    P: "#00B894", // Mint
+    Q: "#6C5CE7", // Purple
+    R: "#FD79A8", // Light Pink
+    S: "#00CEC9", // Turquoise
+    T: "#FDCB6E", // Yellow
+    U: "#0984E3", // Blue
+    V: "#6AB04C", // Green
+    W: "#E17055", // Coral
+    X: "#A29BFE", // Lavender
+    Y: "#FF7675", // Salmon
+    Z: "#74B9FF", // Light Blue
+  };
 
-    useEffect(() => {
-        const loader = new Loader({
-            apiKey: import.meta.env.VITE_MAP_COMPONENT_API_KEY,
-            version: "weekly",
-            libraries: ["places"]
-        });
+  return colors[initial.toUpperCase()] || "#a31ab0"; // Default color if initial not found
+};
 
-        loader
-            .load()
-            .then(() => {
-                console.log("Google Maps API geladen via @googlemaps/js-api-loader");
-                getUserLocation();
-            })
-            .catch((err) => {
-                console.error("Google Maps loader error:", err);
-                alert("Failed to load Google Maps. Please try again later.");
-            });
-    }, []);
+// Custom Marker Component
+const CustomMarker = ({ user, onClick }) => {
+  const initial = user.name.charAt(0);
+  const backgroundColor = getInitialColor(initial);
 
-    // Removed loadScript function as it is no longer needed.
+  return (
+    <div
+      onClick={onClick}
+      style={{
+        cursor: "pointer",
+        position: "relative",
+        transform: "translate(-50%, -50%)",
+      }}
+    >
+      <div
+        style={{
+          width: "40px",
+          height: "40px",
+          borderRadius: "50%",
+          backgroundColor: backgroundColor,
+          border: "2px solid white",
+          boxShadow: "0 2px 4px rgba(0,0,0,0.2)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          color: "white",
+          padding: "8px",
+          fontSize: "24px",
+          fontWeight: "bold",
+        }}
+      >
+        {initial}
+      </div>
+    </div>
+  );
+};
 
-    // Use Geolocation API to get the user's current location, fallback if unavailable
-    const getUserLocation = async () => {
-        try {
-            const waitForGoogle = () => {
-                return new Promise((resolve, reject) => {
-                    let attempts = 0;
-                    const maxAttempts = 20;
-                    const interval = setInterval(() => {
-                        if (window.google && window.google.maps) {
-                            clearInterval(interval);
-                            resolve();
-                        } else if (++attempts > maxAttempts) {
-                            clearInterval(interval);
-                            reject("Google Maps API not available after multiple attempts");
-                        }
-                    }, 200); // check elke 200ms
-                });
-            };
+function MapComponent({ filters }) {
+  const [coordinates, setCoordinates] = useState({
+    lat: 52.37280565269903,
+    lng: 4.8954380555006285,
+  });
+  const [selectedMarker, setSelectedMarker] = useState(null);
+  const [filteredUsers, setFilteredUsers] = useState(userDatabase);
+  const navigate = useNavigate();
 
-            await waitForGoogle();
+  const handleContactClick = (email) => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      // If not logged in, redirect to login page
+      navigate("/login");
+      return;
+    }
 
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(
-                    (position) => {
-                        const userLocation = {
-                            lat: position.coords.latitude,
-                            lng: position.coords.longitude
-                        };
-                        initMap(userLocation); // Initialize the map at the user's location
-                    },
-                    (error) => {
-                        console.warn("Error getting user's location:", error);
-                        initMap(fallbackLocation); // Fallback to default location
-                    }
-                );
-            } else {
-                console.warn("Geolocation is not supported by this browser.");
-                initMap(fallbackLocation); // Fallback to default location
-            }
-        } catch (error) {
-            console.error("Error waiting for Google Maps:", error);
-            initMap(fallbackLocation); // Fallback to default location
-        }
-    };
+    // If logged in, open email client in new tab
+    window.open(`mailto:${email}`, "_blank");
+  };
 
-    // Initialize the map at a given location
-    const initMap = (location) => {
-        try {
-            const googleMap = new window.google.maps.Map(document.getElementById('map'), {
-                zoom: 12, // Zoom level to see the area in detail
-                center: location, // Center the map at the given location
-                mapId: import.meta.env.VITE_MAP_ID_KEY, // Use the map ID from .env variable
-                disableDefaultUI: true, // Add this line to disable all default UI controls
-            });
-
-            setMap(googleMap);
-
-            // Create a single InfoWindow instance to be reused across markers
-            const newInfoWindow = new window.google.maps.InfoWindow();
-            setInfoWindow(newInfoWindow);
-
-            if (isAuth) {
-                // Only show markers when authenticated
-                userDatabase.forEach((user) => {
-                    addUserMarker(googleMap, user, newInfoWindow);
-                });
-            }
-        } catch (error) {
-            console.error("Error initializing the map:", error);
-            alert("Failed to initialize the map. Please try again later.");
-        }
-    };
-
-    // Function to add a pin marker for a user
-    const addUserMarker = (mapInstance, user, infoWindow) => {
-        try {
-            // Create the marker at the user's location
-            const marker = new window.google.maps.Marker({
-                map: mapInstance,
-                position: user.location,
-                title: user.name,  // Tooltip that shows on hover
-            });
-
-            // Extract the class name from the CSS module
-            const userInfoBalloonClass = styles["user-info-balloon"];
-
-            // Create the content for the info window using the resolved class name
-            const infoWindowContent = `
-                <div>
-                    <p class="${userInfoBalloonClass}"><strong>${user.name}</strong></p>
-                    <p class="${userInfoBalloonClass}">Address: ${user.address}</p>
-                    <p class="${userInfoBalloonClass}">Contact: ${user.email}</p>
-                    <p class="${userInfoBalloonClass}">${user.profession} with ${user.experience} years of experience</p>
-                </div>
-            `;
-
-            // Add a click listener to the marker to show the info window
-            marker.addListener('click', () => {
-                // Close any currently open info window
-                infoWindow.close();
-
-                // Set the content of the info window dynamically based on the clicked marker
-                infoWindow.setContent(infoWindowContent);
-                // Open the info window anchored to the clicked marker
-                infoWindow.open(mapInstance, marker);
-            });
-
-            return marker;
-        } catch (error) {
-            console.error("Error adding marker:", error);
-        }
-    };
-
-    // Function to clear existing markers
-    const clearMarkers = () => {
-        markers.forEach((marker) => marker.setMap(null)); // Remove each marker from the map
-        setMarkers([]); // Reset the markers state
-    };
-
-    const handleApplyFilters = (newFilters) => {
-        setFilters(newFilters);
-        console.log('Toegepaste filters:', newFilters);
-
-        if (newFilters.coordinates && map !== null) {
-            map.setCenter(newFilters.coordinates);
-            map.setZoom(14);
-
-            // Zoek garages in de buurt met Google Places API
-            findNearbyGarages(newFilters.coordinates, newFilters.radius);
-        }
-    };
-
-    const findNearbyGarages = (location, radius) => {
-        const service = new window.google.maps.places.PlacesService(map);
-
-        const request = {
-            location,
-            radius: radius * 1000, // Omzetten naar meters
-            type: ['car_repair'], // Zoeken naar garages / autoreparatiebedrijven
-        };
-
-        service.nearbySearch(request, (results, status) => {
-            if (status === window.google.maps.places.PlacesServiceStatus.OK) {
-                console.log("Gevonden garages:", results);
-
-                clearMarkers(); // Verwijder oude markers
-
-                const newMarkers = results.map(place => {
-                    const marker = new window.google.maps.Marker({
-                        map: map,
-                        position: place.geometry.location,
-                        title: place.name,
-                    });
-
-                    // Info-venster voor garage
-                    const infoWindow = new window.google.maps.InfoWindow({
-                        content: `<strong>${place.name}</strong><br>${place.vicinity}`
-                    });
-
-                    marker.addListener("click", () => {
-                        infoWindow.open(map, marker);
-                    });
-
-                    return marker;
-                });
-
-                setMarkers(newMarkers);
-            } else {
-                console.error("Geen garages gevonden:", status);
-            }
-        });
-    };
-
-    // Function to calculate the distance between two locations (Haversine formula)
-    const calculateDistance = (location1, location2) => {
-        const toRadians = (degrees) => degrees * (Math.PI / 180);
-        const R = 6371; // Radius of Earth in kilometers
-        const dLat = toRadians(location2.lat - location1.lat);
-        const dLng = toRadians(location2.lng - location1.lng);
+  useEffect(() => {
+    if (filters) {
+      // Calculate distance between two points using Haversine formula
+      const calculateDistance = (lat1, lon1, lat2, lon2) => {
+        const R = 6371; // Radius of the earth in km
+        const dLat = (lat2 - lat1) * (Math.PI / 180);
+        const dLon = (lon2 - lon1) * (Math.PI / 180);
         const a =
-            Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-            Math.cos(toRadians(location1.lat)) * Math.cos(toRadians(location2.lat)) *
-            Math.sin(dLng / 2) * Math.sin(dLng / 2);
+          Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+          Math.cos(lat1 * (Math.PI / 180)) *
+            Math.cos(lat2 * (Math.PI / 180)) *
+            Math.sin(dLon / 2) *
+            Math.sin(dLon / 2);
         const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-        return R * c; // Distance in kilometers
-    };
+        return R * c; // Distance in km
+      };
 
-    return (
-        <div className={styles["address-container"]}>
-            {/* Sidebar voor filters */}
-            <FilterSidebar onApplyFilters={handleApplyFilters} />
+      // Filter users within the specified radius and matching brands
+      const usersInRadius = userDatabase.filter((user) => {
+        const distance = calculateDistance(
+          filters.coordinates.lat,
+          filters.coordinates.lng,
+          user.location.lat,
+          user.location.lng
+        );
 
-            <div id="map" className={styles["map-container"]}></div>
+        // Check if user is within radius
+        const withinRadius = distance <= filters.radius;
+
+        // Check if user has any of the specified brands
+        const hasMatchingBrands =
+          filters.brands.length === 0 ||
+          filters.brands.some((brand) =>
+            (user.brands || []).some((userBrand) =>
+              userBrand.toLowerCase().includes(brand.toLowerCase())
+            )
+          );
+
+        return withinRadius && hasMatchingBrands;
+      });
+
+      setFilteredUsers(usersInRadius);
+      setCoordinates(filters.coordinates);
+    }
+  }, [filters]);
+
+  useEffect(() => {
+    if (!filters && "geolocation" in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setCoordinates({
+            lat: position.coords.latitude,
+            lng: position.coords.longitude,
+          });
+        },
+        (error) => {
+          console.log("Geolocation error:", error);
+          // Keep default coordinates if user denies or error occurs
+        }
+      );
+    }
+  }, [filters]);
+
+  return (
+    <>
+      <APIProvider apiKey={import.meta.env.VITE_MAP_COMPONENT_API_KEY}>
+        <div style={{ width: "100vw", height: "100vh" }}>
+          <Map
+            style={{ width: "100%", height: "100%" }}
+            defaultCenter={coordinates}
+            defaultZoom={8}
+            mapId={import.meta.env.VITE_MAP_ID || "YOUR_MAP_ID"}
+          >
+            <MapController coordinates={coordinates} />
+            {filteredUsers.map((user) => (
+              <AdvancedMarker
+                key={user.id}
+                position={user.location}
+                onClick={() => setSelectedMarker(user)}
+              >
+                <CustomMarker
+                  user={user}
+                  onClick={() => setSelectedMarker(user)}
+                />
+              </AdvancedMarker>
+            ))}
+            {selectedMarker && (
+              <InfoWindow
+                position={selectedMarker.location}
+                onCloseClick={() => setSelectedMarker(null)}
+              >
+                <div style={{ padding: "8px", maxWidth: "300px" }}>
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      gap: "5px",
+                    }}
+                  >
+                    <img
+                      src={"https://thispersondoesnotexist.com/"}
+                      alt={selectedMarker.name}
+                      style={{
+                        width: "70px",
+                        height: "70px",
+                        objectFit: "cover",
+                        borderRadius: "50%",
+                        marginBottom: "8px",
+                      }}
+                    />
+                    <h3 style={{ margin: "0 0 8px 0" }}>
+                      {selectedMarker.name}
+                    </h3>
+                  </div>
+                  <p style={{ margin: "4px 0" }}>
+                    <strong>Profession:</strong> {selectedMarker.profession}
+                  </p>
+                  <p style={{ margin: "4px 0" }}>
+                    <strong>Experience:</strong> {selectedMarker.experience}{" "}
+                    years
+                  </p>
+                  <p style={{ margin: "4px 0" }}>
+                    <strong>Address:</strong> {selectedMarker.address}
+                  </p>
+                  <p style={{ margin: "4px 0" }}>
+                    <strong>Brand:</strong>
+                    {selectedMarker.brands.join(", ")}
+                 
+                  </p>
+                  <button
+                    onClick={() => handleContactClick(selectedMarker.email)}
+                    style={{
+                      backgroundColor: "#4CAF50",
+                      color: "white",
+                      padding: "8px 16px",
+                      border: "none",
+                      borderRadius: "4px",
+                      cursor: "pointer",
+                      marginTop: "8px",
+                      width: "100%",
+                    }}
+                  >
+                    Stuur me een bericht
+                  </button>
+                </div>
+              </InfoWindow>
+            )}
+          </Map>
         </div>
-    );
+      </APIProvider>
+    </>
+  );
 }
 
 export default MapComponent;

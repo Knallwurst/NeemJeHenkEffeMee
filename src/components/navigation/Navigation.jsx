@@ -3,7 +3,7 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import styles from './Navigation.module.css';
 import { AuthContext } from "../../context/AuthContext";
 import avatar from "../../assets/avatar.png"; // Default avatar
-import Button from '../Button/Button';
+import Button from '../button/Button';
 import LogoutButton from "../button/LogoutButton.jsx";
 
 function Navigation() {
@@ -35,9 +35,9 @@ function Navigation() {
 
                 {isAuth ? (
                     <li className={styles["navRight"]}>
-                        <Button onClick={() => navigate("/add-user")}>
+                        {/* <Button onClick={() => navigate("/add-user")}>
                             Add Henk
-                        </Button>
+                        </Button> */}
                         <div className={styles["user-dropdown-container"]}>
                             <img
                                 src={profilePicture || avatar} // Use context profile picture or default avatar

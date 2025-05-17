@@ -20,6 +20,7 @@ function AuthContextProvider({ children }) {
 
             if (isTokenValid(decoded)) {
                 getUserDetails(decoded.sub, token).then();
+                console.log(   "gamer")
                 console.log(`Token is herkend, ${decoded.sub} is opnieuw ingelogd!`);
             } else {
                 setIsAuth({
@@ -40,6 +41,11 @@ function AuthContextProvider({ children }) {
     function login(accessToken) {
         localStorage.setItem("token", accessToken);
         const decoded = jwtDecode(accessToken);
+        setIsAuth({
+            isAuth: true,
+            user: decoded.sub,
+            status: "done"
+        });
         getUserDetails(decoded.sub, accessToken).then();
         console.log("Gebruiker is ingelogd!");
     }
@@ -66,7 +72,9 @@ function AuthContextProvider({ children }) {
                 }
             });
 
-            // Fetch the user's profile picture
+            
+            try{
+                // Fetch the user's profile picture
             const profilePicResponse = await axios.get(`https://api.datavortex.nl/neemjehenkffmee/users/${username}/download`, {
                 headers: {
                     "X-Api-Key": import.meta.env.VITE_NOVI_BACKEND_API_KEY,
@@ -76,6 +84,11 @@ function AuthContextProvider({ children }) {
             });
             const imageBlob = profilePicResponse.data;
             const imageUrl = URL.createObjectURL(imageBlob);
+            setProfilePicture(imageUrl); // Set profile picture
+            }catch(error){
+                console.log(error)
+            }
+           
 
             setIsAuth({
                 ...isAuth,
@@ -86,7 +99,7 @@ function AuthContextProvider({ children }) {
                 },
                 status: "done"
             });
-            setProfilePicture(imageUrl); // Set profile picture
+           
             navigate("/");
         } catch (error) {
             setIsAuth({
