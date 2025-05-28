@@ -16,7 +16,7 @@ import { useState, useEffect } from "react";
 import { userDatabase } from "../../fictional database/db";
 import { useNavigate } from "react-router-dom";
 
-// Separate component to handle map movement
+// Positie van de kaart aanpast wanneer de coordinates veranderen
 function MapController({ coordinates }) {
   const map = useMap();
 
@@ -30,7 +30,7 @@ function MapController({ coordinates }) {
   return null;
 }
 
-// Color mapping function
+// Color mapping functie
 const getInitialColor = (initial) => {
   const colors = {
     A: "#FF6B6B", // Coral Red
@@ -61,7 +61,7 @@ const getInitialColor = (initial) => {
     Z: "#74B9FF", // Light Blue
   };
 
-  return colors[initial.toUpperCase()] || "#a31ab0"; // Default color if initial not found
+  return colors[initial.toUpperCase()] || "#a31ab0"; // Default color als initial niet gevonden is
 };
 
 // Custom Marker Component
@@ -113,18 +113,18 @@ function MapComponent({ filters }) {
   const handleContactClick = (email) => {
     const token = localStorage.getItem("token");
     if (!token) {
-      // If not logged in, redirect to login page
+      // Wanneer niet ingelogd, doorverwijzing naar login pagina
       navigate("/login");
       return;
     }
 
-    // If logged in, open email client in new tab
+    // Wanneer ingelogd, open email client in een nieuwe tab
     window.open(`mailto:${email}`, "_blank");
   };
 
   useEffect(() => {
     if (filters) {
-      // Calculate distance between two points using Haversine formula
+      // Haversine formule voor afstand te berekenen
       const calculateDistance = (lat1, lon1, lat2, lon2) => {
         const R = 6371; // Radius of the earth in km
         const dLat = (lat2 - lat1) * (Math.PI / 180);
@@ -136,10 +136,10 @@ function MapComponent({ filters }) {
             Math.sin(dLon / 2) *
             Math.sin(dLon / 2);
         const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-        return R * c; // Distance in km
+        return R * c; // Afstand in km's
       };
 
-      // Filter users within the specified radius and matching brands
+      // Filter users binnen een radius die voldoen aan filter eisen
       const usersInRadius = userDatabase.filter((user) => {
         const distance = calculateDistance(
           filters.coordinates.lat,
@@ -148,15 +148,16 @@ function MapComponent({ filters }) {
           user.location.lng
         );
 
-        // Check if user is within radius
+        // Check user binnen radius
         const withinRadius = distance <= filters.radius;
 
-        // Check if user has any of the specified brands
+        // Check als user brands heeft geselecteerd
         const hasMatchingBrands =
           filters.brands.length === 0 ||
-          filters.brands.some((brand) =>
-            (user.brands || []).some((userBrand) =>
-              userBrand.toLowerCase().includes(brand.toLowerCase())
+          filters.brands.some((selectedBrand) =>
+            (user.brands || []).some(
+              (userBrand) =>
+                userBrand.toLowerCase() === selectedBrand.toLowerCase()
             )
           );
 
@@ -165,29 +166,33 @@ function MapComponent({ filters }) {
 
       setFilteredUsers(usersInRadius);
       setCoordinates(filters.coordinates);
-    }
-  }, [filters]);
-
-  useEffect(() => {
-    if (!filters && "geolocation" in navigator) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          setCoordinates({
-            lat: position.coords.latitude,
-            lng: position.coords.longitude,
-          });
-        },
-        (error) => {
-          console.log("Geolocation error:", error);
-          // Keep default coordinates if user denies or error occurs
-        }
-      );
+    } else {
+      // Reset om alle gebruikers te tonen wanneer filters worden verwijderd
+      setFilteredUsers(userDatabase);
+      // Reset naar standaardcoördinaten of locatie van de gebruiker
+      if ("geolocation" in navigator) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            setCoordinates({
+              lat: position.coords.latitude,
+              lng: position.coords.longitude,
+            });
+          },
+          (error) => {
+            console.log("Geolocation error:", error);
+            // Behoud standaardcoördinaten als de gebruiker weigert of er een fout optreedt
+          }
+        );
+      }
     }
   }, [filters]);
 
   return (
     <>
-      <APIProvider apiKey={import.meta.env.VITE_MAP_COMPONENT_API_KEY}>
+      <APIProvider
+        apiKey={import.meta.env.VITE_MAP_COMPONENT_API_KEY}
+        libraries={["places"]}
+      >
         <div style={{ width: "100vw", height: "100vh" }}>
           <Map
             style={{ width: "100%", height: "100%" }}
@@ -251,7 +256,6 @@ function MapComponent({ filters }) {
                   <p style={{ margin: "4px 0" }}>
                     <strong>Brand:</strong>
                     {selectedMarker.brands.join(", ")}
-                 
                   </p>
                   <button
                     onClick={() => handleContactClick(selectedMarker.email)}

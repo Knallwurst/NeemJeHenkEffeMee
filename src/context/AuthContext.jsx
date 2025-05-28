@@ -57,10 +57,10 @@ function AuthContextProvider({ children }) {
             user: null,
             status: "done"
         });
-        setProfilePicture(avatar); // Reset profile picture to default
+        setProfilePicture(avatar); // Reset profile picture naar default
         console.log("Gebruiker is uitgelogd!");
         navigate("/");
-        window.location.reload(); // Refresh the page after navigating
+        window.location.reload(); // Refresh pagina na navigating
     }
 
     async function getUserDetails(username, token) {
@@ -74,7 +74,7 @@ function AuthContextProvider({ children }) {
 
             
             try{
-                // Fetch the user's profile picture
+                // Fetch user's profielfoto
             const profilePicResponse = await axios.get(`https://api.datavortex.nl/neemjehenkffmee/users/${username}/download`, {
                 headers: {
                     "X-Api-Key": import.meta.env.VITE_NOVI_BACKEND_API_KEY,

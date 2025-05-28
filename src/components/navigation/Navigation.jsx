@@ -40,7 +40,7 @@ function Navigation() {
                         </Button> */}
                         <div className={styles["user-dropdown-container"]}>
                             <img
-                                src={profilePicture || avatar} // Use context profile picture or default avatar
+                                src={profilePicture || avatar} // Gebruik context profiel foto of een default avatar
                                 alt="User Avatar"
                                 className={styles["avatar"]}
                                 onClick={toggleDropdown}
@@ -54,7 +54,7 @@ function Navigation() {
                                             className={({ isActive }) =>
                                                 isActive ? styles["active-navlink"] : styles["navlink"]
                                             }
-                                            onClick={closeDropdown} // Close dropdown on profile click
+                                            onClick={closeDropdown} // Sluit dropdown bij profile click
                                         >
                                             Profile
                                         </NavLink>

@@ -8,11 +8,11 @@ export default defineConfig(({ mode }) => {
   return {
     plugins: [react()],
     server: {
-      port: 5173, // Specify the port here
-      strictPort: true, // This ensures that Vite will fail if port 5173 is unavailable
+      port: 5173, // Port speciferen
+      strictPort: true, // Dit zorgt ervoor dat Vite zal falen als poort 5173 niet beschikbaar is
     },
     build: {
-      sourcemap: true,  // Enable source maps for better debugging
+      sourcemap: true,  // Source maps voor betere debugging
     },
     define: {
       'process.env.VITE_MAP_COMPONENT_API_KEY': JSON.stringify(env.VITE_MAP_COMPONENT_API_KEY),
