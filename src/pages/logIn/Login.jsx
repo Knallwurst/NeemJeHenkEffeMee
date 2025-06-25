@@ -117,7 +117,7 @@ function Login() {
       </form>
       <p className={styles["register-link"]}>
         <Link to="/register" className={styles["login-link"]}>
-          Need an account? Sign up here
+          Nog geen account? Klik hier om je te registreren
         </Link>
       </p>
     </div>

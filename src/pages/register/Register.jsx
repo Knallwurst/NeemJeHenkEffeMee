@@ -67,13 +67,13 @@ function Register() {
   }
 
   return (
-    <>
+    <div className={styles["register-container"]}>
       <form
         onSubmit={handleSubmit(handleFormSubmit)}
         className={styles["register-form"]}
       >
-        <h2>Register</h2>
-        <label htmlFor="username-field" className={styles["label"]}>
+          <h2 className={styles["register-title"]}>Registreren</h2>
+          <label htmlFor="username-field" className={styles["label"]}>
           Username:
         </label>
         <Input
@@ -155,17 +155,17 @@ function Register() {
           type="submit"
           id="register-button"
           disabled={!isDirty || !isValid}
-      
+
         >
-          Sign Up
+          Registreren
         </Button>
       </form>
-      <p>
+      <p className={styles["register-link"]}>
         <Link to="/login" className={styles["register-link"]}>
-          Already registered? Sign in here
+          Heb je al een account aangemaakt? Klik dan hier om in te loggen
         </Link>
       </p>
-    </>
+    </div>
   );
 }
 
