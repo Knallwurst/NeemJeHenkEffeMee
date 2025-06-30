@@ -6,15 +6,12 @@ if (!import.meta.env.VITE_MAP_COMPONENT_API_KEY) {
 import {
   APIProvider,
   Map,
-  Marker,
   InfoWindow,
   useMap,
   AdvancedMarker,
 } from "@vis.gl/react-google-maps";
-import styles from "./MapComponent.module.css";
 import { useState, useEffect } from "react";
 import { userDatabase } from "../../fictional database/db";
-import { useNavigate } from "react-router-dom";
 
 // Positie van de kaart aanpast wanneer de coordinates veranderen
 function MapController({ coordinates }) {
@@ -108,17 +105,8 @@ function MapComponent({ filters }) {
   });
   const [selectedMarker, setSelectedMarker] = useState(null);
   const [filteredUsers, setFilteredUsers] = useState(userDatabase);
-  const navigate = useNavigate();
 
   const handleContactClick = (email) => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      // Wanneer niet ingelogd, doorverwijzing naar login pagina
-      navigate("/login");
-      return;
-    }
-
-    // Wanneer ingelogd, open email client in een nieuwe tab
     window.open(`mailto:${email}`, "_blank");
   };
 

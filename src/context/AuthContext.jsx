@@ -48,6 +48,8 @@ function AuthContextProvider({ children }) {
         });
         getUserDetails(decoded.sub, accessToken).then();
         console.log("Gebruiker is ingelogd!");
+
+        navigate("/");
     }
 
     function logOut() {
@@ -99,8 +101,6 @@ function AuthContextProvider({ children }) {
                 },
                 status: "done"
             });
-           
-            navigate("/");
         } catch (error) {
             setIsAuth({
                 isAuth: false,

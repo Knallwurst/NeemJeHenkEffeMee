@@ -25,19 +25,18 @@ function Navigation() {
         <nav className={styles["nav-container"]}>
             <ul className={styles["nav-items"]}>
                 <li className={styles["navLeft"]}>
-                    <Button onClick={() => navigate("/about")}>
-                        Over ons
-                    </Button>
-                    <Button onClick={() => navigate("/")}>
-                        Home
-                    </Button>
+                    {isAuth ? (
+                        <Button onClick={() => navigate("/")}>
+                            Home
+                        </Button>
+                        ) : (
+                        <Button onClick={() => navigate("/about")}>
+                            Over ons
+                        </Button>
+                    )}
                 </li>
-
-                {isAuth ? (
-                    <li className={styles["navRight"]}>
-                        {/* <Button onClick={() => navigate("/add-user")}>
-                            Add Henk
-                        </Button> */}
+                <li className={styles["navRight"]}>
+                    {isAuth ? (
                         <div className={styles["user-dropdown-container"]}>
                             <img
                                 src={profilePicture || avatar} // Gebruik context profiel foto of een default avatar
@@ -65,17 +64,17 @@ function Navigation() {
                                 </div>
                             )}
                         </div>
-                    </li>
-                ) : (
-                    <li className={styles["navRight"]}>
-                        <Button onClick={() => navigate("/login")}>
-                            Login
-                        </Button>
-                        <Button onClick={() => navigate("/register")}>
-                            Aanmelden
-                        </Button>
-                    </li>
-                )}
+                    ) : (
+                        <>
+                            <Button onClick={() => navigate("/login")}>
+                                Aanmelden
+                            </Button>
+                            <Button onClick={() => navigate("/register")}>
+                                Registreren
+                            </Button>
+                        </>
+                    )}
+                </li>
             </ul>
         </nav>
     );

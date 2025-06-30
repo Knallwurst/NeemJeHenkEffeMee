@@ -4,6 +4,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import Input from "../../components/input/Input.jsx";
 import Button from "../../components/button/Button.jsx";
+import { useState } from "react";
 
 function Register() {
   const {
@@ -13,53 +14,74 @@ function Register() {
     watch,
   } = useForm({ mode: "onChange" });
   const navigate = useNavigate();
-  const USERNAME = /^[a-zA-Z]*[a-zA-Z0-9-_]{3,23}$/;
-  const EMAIL = /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/;
-  const PASSWORD =
+  const VALID_USERNAME_PATTERN = /^[a-zA-Z]*[a-zA-Z0-9-_]{3,23}$/;
+  const VALID_EMAIL_PATTERN = /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/;
+  const VALID_PASSWORD_PATTERN =
     /^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[^A-Za-z0-9';<>&|/\\]).{8,24}$/;
 
+  const [registerError, setRegisterError] = useState("");
+
   async function handleFormSubmit(data) {
-    const v1 = USERNAME.test(data.username);
-    const v2 = PASSWORD.test(data.password);
+    setRegisterError(""); // Clear any previous errors
+
+    const isUsernameValid = VALID_USERNAME_PATTERN.test(data.username);
+    const isPasswordValid = VALID_PASSWORD_PATTERN.test(data.password);
+    const isEmailValid = VALID_EMAIL_PATTERN.test(data.email);
+
     const controller = new AbortController();
     const apiKey = import.meta.env.VITE_NOVI_BACKEND_API_KEY;
-    console.log(v1,v2,data.password,data["matching-password"])
-   
+    console.log(isUsernameValid,isPasswordValid,data.password,data["matching-password"])
 
     try {
-      // JS hack protection
-      if (v1 && v2 && data.password === data["matching-password"]) {
-        const controller = new AbortController();
-      
-        await axios.post(
-          "https://api.datavortex.nl/neemjehenkffmee/users",
-          {
-            username: data.username,
-            email: data.email,
-            password: data.password,
-            info: data.email,
-            authorities: [
-              {
-                authority: "USER",
-              },
-            ],
-          },
-          {
-            headers: {
-              "Content-Type": "application/json",
-              "X-Api-Key": apiKey,
-            },
-            signal: controller.signal,
-          }
-        );
-        console.log("Registration successful");
-        navigate("/login");
+      if (!isUsernameValid) {
+        setRegisterError("Gebruikersnaam is niet mogelijk");
+        return;
       }
+      if (!isPasswordValid) {
+        setRegisterError("Wachtwoord is niet sterk genoeg");
+        return;
+      }
+      if (!isEmailValid) {
+        setRegisterError("Email is niet mogelijk");
+        return;
+      }
+      if (data.password !== data["matching-password"]) {
+        setRegisterError("Wachtwoorden komen niet overeen");
+        return;
+      }
+
+      const controller = new AbortController();
+    
+      await axios.post(
+        "https://api.datavortex.nl/neemjehenkffmee/users",
+        {
+          username: data.username,
+          email: data.email,
+          password: data.password,
+          info: data.email,
+          authorities: [
+            {
+              authority: "USER",
+            },
+          ],
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            "X-Api-Key": apiKey,
+          },
+          signal: controller.signal,
+        }
+      );
+
+      console.log("Registration successful");
+      navigate("/login");
     } catch (error) {
       if (controller.signal.aborted) {
         console.error("Request cancelled:", error.message);
-      } else {
+      } else {        
         console.error(error);
+        setRegisterError("Invalid username or email, or not sufficiently strong password. Please try again.");
       }
     } finally {
       controller.abort();
@@ -73,6 +95,10 @@ function Register() {
         className={styles["register-form"]}
       >
           <h2 className={styles["register-title"]}>Registreren</h2>
+          {registerError && (
+            <div className={styles["error-message"]}>{registerError}</div>
+          )}
+
           <label htmlFor="username-field" className={styles["label"]}>
           Username:
         </label>
@@ -87,7 +113,7 @@ function Register() {
             maxLength: (v) =>
               v.length <= 23 || "Max. number of characters is 23",
             matchPattern: (v) =>
-              USERNAME.test(v) || "Only text, numbers and - or _ are allowed",
+              VALID_USERNAME_PATTERN.test(v) || "Only text, numbers and - or _ are allowed",
           }}
         />
         <label htmlFor="email-field" className={styles["label"]}>
@@ -100,7 +126,7 @@ function Register() {
           register={register}
           errors={errors}
           customValidateParams={{
-            matchPattern: (v) => EMAIL.test(v) || "Invalid email",
+            matchPattern: (v) => VALID_EMAIL_PATTERN.test(v) || "Invalid email",
           }}
         />
         <label htmlFor="password-field" className={styles["label"]}>
@@ -119,7 +145,7 @@ function Register() {
             },
             validate: {
               matchPattern: (v) =>
-                PASSWORD.test(v) ||
+                VALID_PASSWORD_PATTERN.test(v) ||
                 "Password should be at least 8 characters long,\n" +
                   "and have at least one uppercase letter,\n" +
                   "one lowercase letter,\n" +
@@ -145,7 +171,7 @@ function Register() {
             },
             validate: {
               matchPattern: (v) =>
-                PASSWORD.test(v) || "Password does not meet the requirements",
+                VALID_PASSWORD_PATTERN.test(v) || "Password does not meet the requirements",
               match: (v) => v === watch("password") || "Passwords do not match",
             },
           }}

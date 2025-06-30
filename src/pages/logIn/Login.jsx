@@ -1,6 +1,6 @@
 import styles from "./Login.module.css";
 import axios from "axios";
-import { useNavigate, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import Input from "../../components/input/Input.jsx";
 import { useContext, useState } from "react";
@@ -14,7 +14,6 @@ function Login() {
     formState: { errors, isDirty, isValid },
     register,
   } = useForm({ mode: "onChange" });
-  const navigate = useNavigate();
   const apiKey = import.meta.env.VITE_NOVI_BACKEND_API_KEY;
   const [loginError, setLoginError] = useState("");
 
@@ -39,7 +38,6 @@ function Login() {
       );
 
       login(response.data["jwt"]);
-      navigate("/");
     } catch (error) {
       if (controller.signal.aborted) {
         console.error("Request cancelled:", error.response.status);
@@ -49,10 +47,6 @@ function Login() {
       }
     }
     controller.abort();
-
-    // Delay the page refresh by 2 seconds (2000 milliseconds)
-  
-
   }
 
   return (
