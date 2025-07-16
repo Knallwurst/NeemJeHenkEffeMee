@@ -1,14 +1,14 @@
 import styles from "./About.module.css";
-import painful from "../../assets/Painful Harold PNG.png";
+import diagnostics from "../../assets/Car Diagnostics.webp";
 
 function About() {
     return (
             <div className={styles["about-content"]}>
-                <h2 className={styles["about-text"]}>
-                    Altijd al een tweedehands auto willen kopen maar geen idee waar je op moet letten?
-                </h2>
-                <div className={styles["painful-wrapper"]}>
-                    <img className={styles["painful"]} src={painful} alt="painful harold"/>
+                <h1 className={styles["about-title"]}>
+                    Vind een lokale expert die jou adviseert
+                </h1>
+                <div className={styles["diagnostics-wrapper"]}>
+                    <img className={styles["diagnostics"]} src={diagnostics} alt="car diagnostics"/>
                 </div>
 
                 <h2 className={styles["about-text"]}> Waarom wij?</h2>
