@@ -10,8 +10,11 @@ import {
   useMap,
   AdvancedMarker,
 } from "@vis.gl/react-google-maps";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { userDatabase } from "../../fictional database/db";
+import { StarIconSvg } from "./icons/StarIconSvg";
+import { pullUserInfo, pushUserInfo } from "../../data/novi/UserInfoApi";
+import { AuthContext } from "../../context/AuthContext";
 
 // Positie van de kaart aanpast wanneer de coordinates veranderen
 function MapController({ coordinates }) {
@@ -109,6 +112,59 @@ function MapComponent({ filters }) {
   const handleContactClick = (email) => {
     window.open(`mailto:${email}`, "_blank");
   };
+
+  const { user } = useContext(AuthContext);
+  const token = localStorage.getItem("token");
+      
+
+  // State to read and set starred garages
+  const [starredGarages, setStarredGarages] = useState([]);
+  const isSelectedMarkerStarred = selectedMarker ? starredGarages.includes(selectedMarker.id) : false;
+
+  // Function to star a garage
+  const handleStarOrUnstarGarage = async () => {
+    const selectedGarageId = selectedMarker.id;
+
+    // 1. Compute new list of starred garages
+    let updatedStarredGarages;
+    if (isSelectedMarkerStarred) {
+      // Remove starred garage
+      updatedStarredGarages = starredGarages.filter(starredGarageId => starredGarageId !== selectedGarageId);
+    }
+    else {
+      // Add starred garage
+      updatedStarredGarages = [...starredGarages, selectedGarageId];
+    }
+
+    // 2. Update UI
+    setStarredGarages(updatedStarredGarages);
+
+    // 3. Push updated data to cloud
+    const updatedUserInfo = { starredGarages: updatedStarredGarages, defaultFilters: [] /* not important yet */ };
+    try {
+      await pushUserInfo(user.username, token, updatedUserInfo);
+    } catch (error) {
+      confirm("Failed to star garage. Please check the console for more details");
+      console.error(error);
+    }
+  };
+
+  // Effect to load starred garages
+  useEffect(() => {
+    const loadStarredGarages = async () => {
+      if (!user?.username || !token) {
+        return;
+      }
+
+      // 1. Fetch data from cloud
+      const userInfo = await pullUserInfo(user.username, token);
+
+      // 2. Update UI
+      setStarredGarages(userInfo.starredGarages);
+    };
+
+    loadStarredGarages();
+  }, [user?.username, token]);
 
   useEffect(() => {
     if (filters) {
@@ -261,6 +317,18 @@ function MapComponent({ filters }) {
                     Stuur me een bericht
                   </button>
                 </div>
+                <button
+                  style={{
+                    position: "absolute",
+                    left: 20,
+                    top: 20,
+                    padding: 0,
+                    background: "transparent"
+                  }}
+                  onClick={handleStarOrUnstarGarage}
+                >
+                  <StarIconSvg isSelected={isSelectedMarkerStarred} />
+                </button>
               </InfoWindow>
             )}
           </Map>
