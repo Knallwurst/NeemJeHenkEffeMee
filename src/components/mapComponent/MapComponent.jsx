@@ -115,7 +115,6 @@ function MapComponent({ filters }) {
 
   const { user } = useContext(AuthContext);
   const token = localStorage.getItem("token");
-      
 
   // State to read and set starred garages
   const [starredGarages, setStarredGarages] = useState([]);
@@ -176,9 +175,9 @@ function MapComponent({ filters }) {
         const a =
           Math.sin(dLat / 2) * Math.sin(dLat / 2) +
           Math.cos(lat1 * (Math.PI / 180)) *
-            Math.cos(lat2 * (Math.PI / 180)) *
-            Math.sin(dLon / 2) *
-            Math.sin(dLon / 2);
+          Math.cos(lat2 * (Math.PI / 180)) *
+          Math.sin(dLon / 2) *
+          Math.sin(dLon / 2);
         const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
         return R * c; // Afstand in km's
       };
@@ -243,6 +242,7 @@ function MapComponent({ filters }) {
             defaultCenter={coordinates}
             defaultZoom={8}
             mapId={import.meta.env.VITE_MAP_ID || "YOUR_MAP_ID"}
+            onClick={() => setSelectedMarker(null)}
           >
             <MapController coordinates={coordinates} />
             {filteredUsers.map((user) => (
@@ -261,6 +261,11 @@ function MapComponent({ filters }) {
               <InfoWindow
                 position={selectedMarker.location}
                 onCloseClick={() => setSelectedMarker(null)}
+                options={{
+                  pixelOffset: { width: 0, height: -10 },
+                  disableAutoPan: true,
+                  className: "custom-infowindow"
+                }}
               >
                 <div style={{ padding: "8px", maxWidth: "300px" }}>
                   <div
@@ -273,7 +278,7 @@ function MapComponent({ filters }) {
                     }}
                   >
                     <img
-                      src={"https://thispersondoesnotexist.com/"}
+                      src={`https://thispersondoesnotexist.com/#${Math.random()}`}
                       alt={selectedMarker.name}
                       style={{
                         width: "70px",

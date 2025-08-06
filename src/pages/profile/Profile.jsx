@@ -74,11 +74,6 @@ function Profile() {
                     <p>{user.email}</p>
                 </div>
             </div>
-            <div className={styles["section-header"]}>
-                <hr className={styles["line"]}/>
-                <h3 className={styles["dashboard-title"]}>Dashboard</h3>
-                <hr className={styles["line"]}/>
-            </div>
         </div>
     );
 }

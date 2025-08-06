@@ -22,7 +22,7 @@ function Register() {
   const [registerError, setRegisterError] = useState("");
 
   async function handleFormSubmit(data) {
-    setRegisterError(""); // Clear any previous errors
+    setRegisterError(""); // Verwijder errors
 
     const isUsernameValid = VALID_USERNAME_PATTERN.test(data.username);
     const isPasswordValid = VALID_PASSWORD_PATTERN.test(data.password);
@@ -74,14 +74,14 @@ function Register() {
         }
       );
 
-      console.log("Registration successful");
+      console.log("Succesvol geregistreerd");
       navigate("/login");
     } catch (error) {
       if (controller.signal.aborted) {
         console.error("Request cancelled:", error.message);
       } else {        
         console.error(error);
-        setRegisterError("Invalid username or email, or not sufficiently strong password. Please try again.");
+        setRegisterError("Gebruikersnaam of e-mailadres is ongeldig, of het wachtwoord is niet sterk genoeg. Probeer het opnieuw.");
       }
     } finally {
       controller.abort();
@@ -141,7 +141,7 @@ function Register() {
           validationParams={{
             required: {
               value: true,
-              message: "This field is required",
+              message: "Verplicht veld",
             },
             validate: {
               matchPattern: (v) =>

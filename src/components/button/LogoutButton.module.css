@@ -1,4 +1,4 @@
-/* Logout button specific styles */
+/* Logout button styles */
 .nav-button-logout {
     background-color: black;
     color: white;
@@ -11,12 +11,11 @@
     z-index: 1;
 }
 
-/* Exclude the green hover effect */
 .nav-button-logout::after {
     content: none;
 }
 
-/* Red hover effect for logout button */
+/* Red hover effect voor logout button */
 .nav-button-logout:hover {
     background-color: #c0392b;
     color: white;

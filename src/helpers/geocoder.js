@@ -9,7 +9,6 @@ export const geocodeAddress = (address, callback) => {
                 const {address_components: addressComponents} = results[0];
 
                 if (addressComponents) {
-                    // Pass both the location and the address components to the callback
                     callback(location, addressComponents);
                 } else {
                     console.error("No address components found in geocoder response.");

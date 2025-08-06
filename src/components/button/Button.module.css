@@ -1,4 +1,4 @@
-/* General button styles */
+/* Algemene button styles */
 .nav-button {
     background-color: black;
     color: white;
@@ -17,7 +17,7 @@
     z-index: 1;
 }
 
-/* Green fill effect */
+/* Groene fill effect */
 .nav-button::after {
     content: '';
     position: absolute;
@@ -27,10 +27,10 @@
     height: 100%;
     background-color: rgba(2, 175, 245, 0.5);
     transition: width 0.3s ease-in-out;
-    z-index: -1; /* Ensure background stays behind text */
+    z-index: -1; /* Achtergrond blijft achter tekst */
 }
 
-/* Hover state for general buttons */
+/* Hover state voor buttons */
 .nav-button:hover::after {
     width: 100%;
 }

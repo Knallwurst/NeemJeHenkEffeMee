@@ -20,26 +20,6 @@
   margin-top: -30px;
 }
 
-.dashboard-title {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #333;
-  font-size: 2rem;
-  font-weight: 600;
-  margin: 0;
-}
-
-.dashboard-title::before,
-.dashboard-title::after {
-  content: "";
-  flex: 1;
-  height: 1px;
-  background: #ccc;
-  margin: 0;
-  box-shadow: 0 1px 3px rgba(129, 123, 123, 0.2);
-}
-
 .profile-info-div {
   position: static;
   align-items: center;

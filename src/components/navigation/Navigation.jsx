@@ -11,12 +11,12 @@ function Navigation() {
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const navigate = useNavigate();
 
-    // Function to toggle the dropdown visibility
+    // Dropdown visibility functie
     const toggleDropdown = () => {
         setDropdownOpen(!dropdownOpen);
     };
 
-    // Function to close the dropdown
+    // Sluiten dropdown functie
     const closeDropdown = () => {
         setDropdownOpen(false);
     };
@@ -56,6 +56,15 @@ function Navigation() {
                                             onClick={closeDropdown} // Sluit dropdown bij profile click
                                         >
                                             Profile
+                                        </NavLink>
+                                        <NavLink
+                                            to="/favorites"
+                                            className={({ isActive }) =>
+                                                isActive ? styles["active-navlink"] : styles["navlink"]
+                                            }
+                                            onClick={closeDropdown} // Sluit dropdown bij profile click
+                                        >
+                                            Mijn garages
                                         </NavLink>
                                         <LogoutButton onClick={() => { logOut(); closeDropdown(); }} className={styles["nav-button-logout"]}>
                                             Uitloggen
