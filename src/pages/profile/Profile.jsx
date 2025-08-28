@@ -5,6 +5,7 @@ import styles from '../../pages/profile/Profile.module.css';
 import { AuthContext } from "../../context/AuthContext.jsx";
 import avatar from "../../assets/avatar.png"; // Default avatar
 
+
 function Profile() {
     const { user, profilePicture, setProfilePicture } = useContext(AuthContext);
     const token = localStorage.getItem("token");
@@ -74,6 +75,12 @@ function Profile() {
                     <p>{user.email}</p>
                 </div>
             </div>
+            <button
+                className={styles["favoriteGarages-button"]}
+                onClick={() => navigate("/favorites")}
+            >
+                Mijn garages
+            </button>
         </div>
     );
 }

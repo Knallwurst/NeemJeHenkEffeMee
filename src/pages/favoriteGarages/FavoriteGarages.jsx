@@ -11,7 +11,7 @@ function FavoriteGarages() {
     // ALL garages
     const allGarages = userDatabase;
 
-    // IDs van gebruikers' geselecteerde experts dat we halen van NOVI back-end
+    // ID's van gebruikers' geselecteerde experts dat we halen van NOVI back-end
     const [favoriteGarageIds, setFavoriteGarageIds] = useState([]);
     useEffect(() => {
         const loadFavoriteGarages = async () => {
@@ -31,7 +31,7 @@ function FavoriteGarages() {
 
     // Functie om expert te verwijderen
     const handleRemoveFavorite = async (garageId) => {
-        // Creeer nieuwe lijst van gemarkeerde experts
+        // Creëer nieuwe lijst van gemarkeerde experts
         let updatedFavoriteGarageIds = favoriteGarageIds.filter(favoriteGarageId => favoriteGarageId !== garageId);
 
         // 2. Update UI
@@ -42,7 +42,7 @@ function FavoriteGarages() {
         try {
             await pushUserInfo(user.username, token, updatedUserInfo);
         } catch (error) {
-            confirm("Failed to remove a favorited garage. Please check the console for more details");
+            confirm("Het lukte niet om deze te verwijderen. Check de console voor meer informatie");
             console.error(error);
         }
     };
