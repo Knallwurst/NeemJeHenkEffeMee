@@ -106,3 +106,43 @@
   box-shadow: 0 0 6px rgba(0, 0, 0, 0.15);
   z-index: 2;
 }
+
+.favoriteGarages-button {
+  background-color: #131314;
+  color: white;
+  border: none;
+  padding: 10px 100px;
+  font-size: 16px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: color 0.3s ease;
+  margin: 20px 12px;
+  border-radius: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1;
+}
+
+/* Groene fill effect */
+.favoriteGarages-button::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 100%;
+  background-color: rgba(2, 175, 245, 0.5);
+  transition: width 0.3s ease-in-out;
+  z-index: -1; /* Achtergrond blijft achter tekst */
+}
+
+/* Activatie: Hover state voor buttons */
+.favoriteGarages-button:hover::after {
+  width: 100%;
+}
+
+.favoriteGarages-button:hover {
+  z-index: 1;
+}

@@ -76,9 +76,7 @@ function Profile() {
                 </div>
             </div>
             <button
-                className={styles["favoriteGarages-button"]}
-                onClick={() => navigate("/favorites")}
-            >
+                className={styles["favoriteGarages-button"]} onClick={() => navigate("/favorites")}>
                 Mijn garages
             </button>
         </div>

@@ -1,6 +1,6 @@
 /* Algemene button styles */
 .nav-button {
-    background-color: black;
+    background-color: #131314;
     color: white;
     border: none;
     padding: 10px 20px;
@@ -30,7 +30,7 @@
     z-index: -1; /* Achtergrond blijft achter tekst */
 }
 
-/* Hover state voor buttons */
+/* Activatie: Hover state voor buttons */
 .nav-button:hover::after {
     width: 100%;
 }

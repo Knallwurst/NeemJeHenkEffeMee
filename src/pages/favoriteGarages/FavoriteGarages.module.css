@@ -3,7 +3,7 @@
   margin: 80px auto;
   background-color: #ffffff;
   border-radius: 12px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 10px rgba(129, 123, 123, 0.2);
   width: 90%;
   max-width: 800px;
   box-sizing: border-box;
@@ -26,6 +26,12 @@
 
 .item-container {
   margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  border-bottom: 1px solid #ccc;
+  padding-bottom: 15px;
+  margin-bottom: 15px;
 }
 
 .item-container > button {
@@ -33,7 +39,19 @@
   margin-right: 10px;
 }
 
-.favoriteGarages-button {
-  margin-top: 110px;
-  padding: 16px;
+.keuze-buttons {
+  display: inline-flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  padding: 0.6em 1.2em;
+  font-size: 1em;
+  font-weight: 500;
+  font-family: inherit;
+  background-color: rgba(12, 119, 244, 0);
+  cursor: pointer;
+  transition: border-color 0.25s;
 }

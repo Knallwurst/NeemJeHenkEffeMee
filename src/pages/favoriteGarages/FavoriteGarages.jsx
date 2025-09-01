@@ -66,9 +66,29 @@ function FavoriteGarages() {
                         <p>Adres: {garage.address}</p>
                         <p>Email: {garage.email}</p>
                         <p>Ervaring: {garage.experience} jaar</p>
-                        <button onClick={() => handleRemoveFavorite(garage.id)}>❌</button>
-                        <button onClick={() => window.open(`mailto:${garage.email}`, '_blank')}>📧</button>
-                        <button onClick={() => alert(`Start chat met ${garage.name}`)}>💬</button>
+                        <div className={styles["emoji-buttons"]}>
+                          <button
+                            className={styles["keuze-buttons"]}
+                            title="E-mail verzenden"
+                            onClick={() => window.open(`mailto:${garage.email}`, '_blank')}
+                          >
+                            📧
+                          </button>
+                          <button
+                            className={styles["keuze-buttons"]}
+                            title="Chat"
+                            onClick={() => alert(`Start chat met ${garage.name}`)}
+                          >
+                            💬
+                          </button>
+                          <button
+                            className={styles["keuze-buttons"]}
+                            title="Verwijderen"
+                            onClick={() => handleRemoveFavorite(garage.id)}
+                          >
+                            ❌
+                          </button>
+                        </div>
                     </div>
                 </div>
             ))}
